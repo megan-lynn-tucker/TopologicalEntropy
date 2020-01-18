@@ -1,0 +1,392 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+    \newtheorem{definition}{Definition}
+\usepackage[english]{babel}
+\usepackage{caption}
+\usepackage{color} %red, green, blue, yellow, cyan, magenta, black, white
+    \definecolor{mygreen}{RGB}{28,172,0} % color values Red, Green, Blue
+    \definecolor{mylilas}{RGB}{170,55,241}
+\usepackage{dirtytalk}
+\usepackage{float}
+\usepackage[a4paper,top=3cm,bottom=3cm,left=2cm,right=2cm,marginparwidth=1.75cm]{geometry}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+    \lstset{   
+        language=Matlab,                		% choose the language of the code
+    %	basicstyle=10pt,       				    % the size of the fonts that are used for the code
+    %	numbers=left,                  			% where to put the line-numbers
+    %	numberstyle=\footnotesize,      		% the size of the fonts that are used for the line-numbers
+    %	stepnumber=1,                   		% the step between two line-numbers. If it's 1 each line will be numbered
+    %	numbersep=5pt,                  		% how far the line-numbers are from the code
+    %	backgroundcolor=\color{lightgray},  	% choose the background color. You must add \usepackage{color}
+        showspaces=false,               		% show spaces adding particular underscores
+        showstringspaces=false,         		% underline spaces within strings
+        showtabs=false,                 		% show tabs within strings adding particular underscores
+        frame=single,	                		% adds a frame around the code
+    %	tabsize=2,                				% sets default tabsize to 2 spaces
+    %	captionpos=b,                   		% sets the caption-position to bottom
+        breaklines=true,               			% sets automatic line breaking
+        breakatwhitespace=false,        		% sets if automatic breaks should only happen at whitespace
+        escapeinside={\%*}{*)}          		% if you want to add a comment within your code
+    }
+\usepackage{subcaption}
+
+\title{
+\normalfont \normalsize 
+\textsc{Introduction to Mathematical Software} \\ [20pt]
+\huge Project: \\ Topological Entropy
+}
+\author{Megan Lynn Tucker}
+\date{December 11, 2019}
+
+%_____________________________________________________________________________
+
+\setlength {\marginparwidth }{2cm}
+
+\begin{document}
+
+\lstset{language=Matlab,
+    %basicstyle=\color{red},
+    breaklines=true,
+    morekeywords={matlab2tikz},
+    keywordstyle=\color{blue},
+    morekeywords=[2]{1}, keywordstyle=[2]{\color{black}},
+    identifierstyle=\color{black},
+    stringstyle=\color{mylilas},
+    commentstyle=\color{mygreen},
+    showstringspaces=false,%without this there will be a symbol in the places where there is a space
+    numbers=none,%
+    numberstyle={\tiny \color{black}},% size of the numbers
+    numbersep=9pt, % this defines how far the numbers are from the text
+    emph=[1]{for,end,break},emphstyle=[1]\color{red}, %some words to emphasise
+    %emph=[2]{word1,word2}, emphstyle=[2]{style},    
+}
+
+\maketitle
+
+\section{Introduction}
+For this project I developed Matlab code to compute both metric entropy and a finite version of topological entropy of sequences of letters.
+The functions developed were used to calculate the entropy of a set of DNA sequences imported into Matlab.
+
+\subsection{Metric Entropy}
+\say{Entropy is a measure of information content and complexity,} as stated by Koslicki \cite{1}.
+Entropy has widespread applications, but here we focus on its applications on DNA.
+Essentially, we wish to measure the entropy of strings of letters.
+
+Suppose we are given an alphabet, $\mathcal{A}$ (for DNA sequences, $\mathcal{A} = \{A, C, G, T\}$).
+We define the word, or string, $w$ as a finite combination of elements of $\mathcal{A}$.
+The set of all $n$-length words formed from $\mathcal{A}$ is denoted by $\mathcal{A}^n$ and $\mathcal{A}^* = \cup_{n \geq 0} \mathcal{A}^n$.
+Lastly, let $|w|$ denote the length (cardinality) of the string $w$ \cite{1}.
+
+As defined by Claude Shannon, metric entropy depends on a measurement \cite{2}.
+More specifically it depends on the probability that certain letters of $\mathcal{A}$ occur in $w$.
+For example, suppose our alphabet is $\mathcal{A} = \{A, C, G, T\}$.
+Let  $w$ be some word defined on the alphabet (in essence, a DNA sequence).
+The probability $A$ appears in $w$ is $P_A$, the probability $C$ occurs in $w$ is $P_C$, and so on and so forth. 
+Therefore the metric entropy of $w$ is
+\begin{equation*}
+    H(w) = -(P_Alog(P_A) + P_Clog(P_C) + P_Tlog(P_T) + P_Glog(P_G))
+\end{equation*}
+where $log$ is the base $e$ (also known as the natural) logarithm \cite{1}.
+Note that in Matlab, $log$ also returns the natural logarithm \cite{4}. 
+
+\begin{definition}
+    Let $\mathcal{A} = \{a_1, a_2, \dots, a_n\}$. Now let $P_{a_i}$ be the probability $a_i$ occurs in $w \in \mathcal{A}^*$.
+    The metric entropy of w is 
+    \begin{equation*}
+        H(w) = -\sum^n_{i=1} P_{a_i} log(P_{a_i})
+    \end{equation*}
+\end{definition}
+
+For example, suppose $w = AAAACCCGGT$.
+Then $|w| = 10$, $P_A = 4/10$, $P_C = 3/10$, $P_G = 2/10$, and $P_T = 1/10$. 
+Therefore 
+\begin{align*}
+    H(w) &= -\bigg(\frac{4}{10}log\bigg(\frac{4}{10}\bigg) + \frac{3}{10}log\bigg(\frac{3}{10}\bigg) + \frac{2}{10}log\bigg(\frac{2}{10}\bigg) + \frac{1}{10}log\bigg(\frac{1}{10}\bigg)\bigg) \\
+    &= -1.27985422583366746718218576214942992813135418692169288639...
+\end{align*}
+\noindent Note that Metric Entropy is not necessarily bounded between 1 and 0. 
+Furthermore, the metric entropy for $w = ACCCCCCCGT$ would be different, whereas the metric entropy for $w = ACCGGGTTTT$ would be the same.
+
+\subsection{Topological Entropy}
+Unfortunately, metric entropy does not compare entropy for words of different length.
+This is problematic because the probability that multiple letters or sequences of letters are repeated is higher in larger sequences than in smaller ones.
+An alternative method to describe complexity is topological entropy.
+Before defining topological entropy, it is necessary to define the complexity function \cite{1}.
+
+\begin{definition}
+    The complexity function $p_w : \mathbb{N} \rightarrow \mathbb{N}$ of a sequence w is the number of different n-length subwords (with overlaps) appearing in w, i.e.
+    \begin{equation*}
+        p_w(n) = |\{u:|u| = \text{$n$ and $u$ appears as a subword of $w$}\}|.
+    \end{equation*}
+\end{definition}
+\noindent Note that we define subwords to be groups of letters found in the original alignment of the word.
+Let us break down what $p_w(n)$ is.
+We want to find all $u$ such that its length is equal the $n$.
+However, note that we want the cardinality of this list, so in the end all we will have is a number.
+
+\begin{definition}
+    Let w be a finite sequence of length $|w|$ on the alphabet $\mathcal{A}$, let n be the unique integer such that
+    \begin{equation*}
+        4^n + n - 1 \leq |w| < 4^{n + 1} + (n + 1) - 1
+    \end{equation*}
+    Then for $w_1^{4^n + n - 1}$ the first $4^n + n - 1$ letters of w, the topological entropy of w is defined as
+    \begin{equation*}
+        H_{top}(w) = \frac{log_4(p_{w_1^{4^n+n-1}}(n))}{n}
+    \end{equation*}
+    where the base 4 logarithm is used.
+\end{definition}
+\noindent Note that $w_1^{4^n + n - 1}$ essentially indicates that we are using the value of $n$ that satisfies the above inequality.
+For example, let $w = AAAAACCCCCTTTTTTTTTTG$.
+Clearly $|w| = 20$.
+We can easily solve the inequality by examination and find that $17 = 42 + 2 - 1 \leq |w| < 43 + 3 - 1 = 66$ so $n = 2$. 
+Therefore we must find all subwords of $w$ of length 2: $\{AA, AC, CC, CT, T T, T G, GG\}$.
+The cardinality of this set is 7, so $p_w(2) = 7$.
+Recall we defined subwords to be words found in the original alignment of the word, so although $CA$ is a possible way to combine letters in the alphabet, it is not a subword of this particular $w$.
+    \[H_{top}(w) = \frac{log_4(7)}{2} = 0.701838730514401026860492329307957702160256656491535195919...\]
+Note that the topological entropy is the same for the sequence $AAAAACCCCCTTTTTTGGGGG$ despite the number of $T$'s and $G$'s differing.
+Similarly, the topological entropy of $AAAAACCCCCTTTTTTGG$ is the same despite $|w|$ = 17.
+
+As we have defined it, $H_{top}(w)$ is always bounded by 0 and 1.
+Sequences with lower complexity have topological entropy closer to 0; the converse is true with more complex sequences.
+Again, we can compare the topological entropy of sequences of different lengths whereas with metric entropy we cannot \cite{1}.
+
+\section{Code}
+\subsection{MetricEntropy}
+\textbf{\textit{Define a function MetricEntropy(w, alphabetSize) that computes the metric entropy of w if it is assumed that the alphabet has size alphabetSize (that is $|$A$|$ = alphabetSize).}}
+\newline
+\newline
+To begin, we assume that we are dealing with any alphabet, not just the $A, C, T, G$ alphabet for DNA sequences.
+Therefore, we must first parse through the word and find which letters compose the alphabet.
+This process is completed by the first for loop in the code below.
+The functions, \texttt{extractBetween} and \texttt{extractBefore} were used to great effect \cite{4}; \texttt{extractBetween} \say{extracts the substring that begins with the first character of \texttt{str} and ends before \texttt{endStr}} and \texttt{extractBefore} \say{extracts the substring from \texttt{str} that occurs between the substrings \texttt{startStr} and \texttt{endStr}}.
+The prebuilt function \texttt{contains} was also used to check if a given letter was already counted; \texttt{contains} \say{returns 1 (true) if \texttt{str} contains the specified pattern, and returns 0 (false) otherwise}\cite{4}.
+
+The second for loop counts how many times each letter appears in the word.
+The number of occurrences of each letter are input into a blank vector for later use.
+This function makes use of the \texttt{count} function which \say{returns the number of occurrences of pattern in \texttt{str}}\cite{4}.
+
+The last for loop calculates the probability for each letter in the alphabet by dividing the number of occurrences of each letter by the total number of letters. 
+It then loops through each letter to calculate the metric entropy.
+\newline
+\lstinputlisting{MetricEntropy.m}
+
+\subsection{ComplexityFunction}
+\textbf{\textit{Definie a function ComplexityFunction(w,n) that computes the complexity function on the sequence w for the subword length n.}}
+\newline
+\newline
+This function only consists of a single for loop and outputs a number which represents the number of subwords in $w$.
+Again, the prebuilt functions \texttt{extractBetween}, \texttt{extractBefore}, and \texttt{contains} are used.
+We begin by determining the number of possible subwords by subtracting the length of the word $w$ by the length of each subword, $n$, and 1.
+We then extract subwords of length $n$ from $w$ using \texttt{extractBetween} and verify that it is a unique subword using \texttt{extractBefore} and \texttt{contains}.
+Note that this function is very similar to the MetricEntropy function.
+\pagebreak
+\lstinputlisting{ComplexityFunction.m}
+
+\subsection{TopologicalEntropy}
+\textbf{\textit{Define a function TopologicalEntropy(w) that computes the topological entropy of w.}}
+\newline
+\newline
+We first determine the length of the string $w$ by using the \texttt{strlength} function which \say{returns the number of characters in \texttt{str}}\cite{4}.
+Next, we solve the inequality by using a while loop.
+Essentially, $L = 0$ when either one or both of the sides of the inequality are false and 1 when they are both true.
+When this occurs, we exit the loop with the value of n that satisfies the inequality.
+The rest of the function is rather self explanatory. 
+Note that we have to manually calculate log base 4 by dividing the natural log of $p$ and the natural log of 4.
+\newline
+\lstinputlisting{TopologicalEntropy.m}
+
+\subsection{Importing Data}
+\textbf{\textit{Download the following file, http://www.math.oregonstate.edu/~koslickd/DNASequences.fasta and read it into Matlab using fastaread().}}
+\newline
+\begin{lstlisting}
+Data = fastaread('DNASequences.fasta'); %data input as structure array with 2 dimensions
+DNA = struct2cell(rmfield(Data,'Header'));
+%rmfield extracts header field leaving only the dna sequences
+%struct2cell converts structure array into cell array of characters
+\end{lstlisting}
+\noindent The code itself is fairly self explanatory.
+The comments provide additional information about the imported data.
+\newline
+\newline
+\newline
+\textbf{\textit{Create a histogram of the lengths of the DNA sequences.}}
+\newline
+\newline
+To construct a histogram of the lengths of the DNA sequences, we must find the length of each DNA sequence.
+Do do this, we fill an array with the corresponding length of each sequence using the \texttt{strlength} function.
+\newline
+\begin{lstlisting}
+length = [];
+for i = 1:58286
+    length(i) = strlength(DNA{i}); %find length of each character array
+end
+
+histogram(length)
+title('Length of DNA Sequences')
+\end{lstlisting}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm]{DNALength.png}
+    \label{fig:DNALength}
+  \end{figure}
+\noindent Note that the majority of the sequences are of length between 0 and 2000 with a large spike around 50.
+However, the histogram extends out towards 12000, indicating there is at least one sequence almost that long.
+
+\pagebreak
+
+\noindent\textbf{\textit{Calculate the metric entropy for each sequence in the file. Create a histogram of the metric entropy values.}}
+\newline
+\begin{lstlisting}
+mEntropy = [];
+for i = 1:58286
+    mEntropy(i) = MetricEntropy(DNA{i},length(i));
+        %calculate metric entropy for each DNA sequence
+        %length corresponds to each DNA sequence
+end
+
+histogram(mEntropy)
+title('Metric Entropy')
+\end{lstlisting}
+Again the code is fairly self explanatory with the comments.
+The histogram is located in the conclusions section next to the histogram of topological entropies.
+\newline
+\newline
+\newline
+\noindent\textbf{\textit{Select the sequences that have metric entropy less than 1.2 (that is, the bottom 1.43\% of the entropies) and save them to a file.}}
+\newline
+\newline
+Again the code is fairly self explanatory with the comments.
+The MetricEntropy function described earlier was used to calculate the metric entropy of each DNA sequence.
+The histogram is located in the conclusions section next to the histogram of topological entropies.
+\newline
+\begin{lstlisting}
+subsetMEntropy = mEntropy < 1.2; %create a logical array where this is true
+%1 means the inequality is true, 0 means it is false
+%find seqnences with metric entropy less than 1.2 (bottom 1.43%)
+subsetDNA1 = {}; %empty character array to hold such sequences
+counter = 1;
+for i = 1:58286
+    if subsetMEntropy(i) == 1 %whenever this is true
+        subsetDNA1{counter} = DNA{i}; %take that value and put it into the new vector
+        counter = counter + 1;
+    end
+end
+
+save ('subsetDNA1.mat', 'subsetDNA1') %save to a .mat file
+\end{lstlisting}
+To find the DNA sequences with metric entropy less than 1.2, we first create a logical array and input all values that satisfy the array into a new array.
+This array was then exported into a .mat file which consisted of 1x836 cells.
+\newline
+\newline
+\newline
+\noindent\textbf{\textit{Calculate the topological entropy for each sequence in the file. 
+Create a histogram of the topological entropy values.}}
+\newline
+\begin{lstlisting}
+tEntropy = [];
+for i = 1:58286
+    tEntropy(i) = TopologicalEntropy(DNA{i});
+    %calculate topological entropy for each DNA sequence
+end
+
+histogram(tEntropy)
+title('Topological Entropy')
+\end{lstlisting}
+The topological entropy was computed in the same way the metric entropy was computed using the TopologicalEntropy function described earlier.
+Again, the histogram is located in the conclusion section next to the histogram of metric entropies.
+\newline
+\newline
+\newline
+\noindent\textbf{\textit{Select the sequences that have topological entropy less than .75 (that is, the bottom 1.44\% of the entropies) and save them to a file.}}
+\newline
+\begin{lstlisting}
+subsetTEntropy = tEntropy < 0.75;
+%create a logical array where this is true
+%1 means the inequality is true, 0 means it is false
+%find sequences with topological entropy less than 0.75 (bottom 1.44%)
+subsetDNA2 = {}; %empty character array to hold such sequences
+counter = 1;
+for i = 1:58286
+    if subsetTEntropy(i) == 1 %whenever this is true
+        subsetDNA2{counter} = DNA{i}; %take that value and put it into the new vector
+        counter = counter + 1;
+    end
+end
+        
+save('subsetDNA2.mat', 'subsetDNA2') %save to a .mat file
+\end{lstlisting}
+To find the DNA sequences with topological entropy less than .75, we follow the same procedure as for metric entropies.
+Again we save to a .mat file which contains a 1x33 cell of DNA sequences.
+
+\section{Conclusion}
+\textbf{\textit{Compare and contrast the histograms of metric entropies and topological entropies.}}
+\newline
+\newline
+Below we can quite clearly see the differences in the two histograms.
+Recall metric entropy is not necessarily bounded by 0 and 1; in fact, almost all of the values are between 1 and 1.4.
+Topological entropy on the other hand is bounded, though most of the values again fall closer to 1.
+The histogram of the metric entropies is much smoother where as the histogram of topological entropies has spikes throughout.
+Both do follow a trend of slowly increasing to a point and then sharply decreasing after reaching the peak (again, topological entropy has spikes that defy this trend).
+Lastly, note that there is a higher concentration of sequences with similar metric entropies as evidenced by the y-axis which extends up to 6000; topological entropy on the other hand has a y-axis only extending up to 3500.
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{.5\textwidth}
+      \centering
+      \includegraphics[width=9cm]{MEntropy.png}
+      \label{fig:MetricEntropy}
+    \end{minipage}%
+    \begin{minipage}{.5\textwidth}
+      \centering
+      \includegraphics[width=9cm]{TEntropy.png}
+      \label{fig:TopologicalEntropy}
+    \end{minipage}
+    \end{figure}
+
+\noindent\textbf{\textit{Consider the low metric entropy and low topological entropy sequences that you saved; what observations can you make about what it means for a sequence to have low metric/topological entropy?}}
+\newline
+\newline
+There are 836 entries in the low metric entropies file and 33 entries in the low topological entropies file which is rather interesting because these lists consist of the bottom 1.43\% of metric entropies and the bottom 1.44\% of topological entropies.
+This indicates that it is much rarer for a sequence to have low topological entropy than it is to have a low metric entropy.
+Although this may seem contradictory (we begin with the same number of DNA sequences) it is not.
+Recall we are calculating the bottom percent of topological and metric entropies, not lengths.
+Therefore, we may have many different sequences with the same topological entropies.
+So it is not unusual that the sizes of each file are different.
+Furthermore, the sequences in the low metric entropy file tend to be significantly longer than the sequences in the topological entropy file.
+This may be due to the fact that we can compare topological entropies of sequences of different lengths, leading to a larger variation in sequences with low topological entropy.
+
+\pagebreak
+
+\bibliographystyle{amsplain}
+\begin{thebibliography}{99}
+
+    %%ADD IN LATEX WEBSITES (overleaf) FOR CODE AND FIGURES
+    %%ADD IN MATLAB WEBSITE
+
+\bibitem{1}
+Koslicki, D.
+\textit{Topological entropy of DNA sequences}
+Bioinformatics, \textbf{27} No.8, (2011), pp. 1061–1067
+
+\bibitem{2}
+Heath, Ralph C. 
+\textit{Topological entropy}
+Trans. of the Amer. Math. Soc., \textbf{114} No.2, (1965), pp. 209–319
+
+\bibitem{3}
+Shannon, C.E.
+\textit{A mathematical theory of communication}
+Bell Sys. Tech. J., \textbf{27} No.3, (1948), pp. 379–423
+
+\bibitem{4}
+Matlab 2019b, The MathWorks, Inc., Natick, Massachusetts, United States.
+
+\end{thebibliography}
+
+\end{document}
