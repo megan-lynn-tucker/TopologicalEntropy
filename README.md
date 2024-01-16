@@ -2,7 +2,7 @@
 Computes metric entropy and a finite version of topological entropy of sequences of letters. 
 
 ## Motivation
-See [final paper](https://github.com/megan-lynn-tucker/TopologicalEntropy/blob/master/Topological%20Entropy.pdf). This paper contains all of the code used as well as graphics produced via analyzing the DNA sequences found in [DNASequences.fasta](https://github.com/megan-lynn-tucker/TopologicalEntropy/blob/master/DNASequences.fasta). This paper was written using LaTeX, and the code can be accessed [here](https://github.com/megan-lynn-tucker/TopologicalEntropy/blob/master/Topological%20Entropy.tex).
+The [final paper](https://github.com/megan-lynn-tucker/TopologicalEntropy/blob/master/Topological%20Entropy.pdf) contains all of the code used as well as graphics produced via analyzing the DNA sequences found in [DNASequences.fasta](https://github.com/megan-lynn-tucker/TopologicalEntropy/blob/master/DNASequences.fasta). This paper was written using LaTeX, and the code can be accessed [here](https://github.com/megan-lynn-tucker/TopologicalEntropy/blob/master/Topological%20Entropy.tex).
 
 ## Code
 The program is broken up into four separate pieces of Matlab code.
